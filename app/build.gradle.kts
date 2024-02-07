@@ -10,7 +10,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.sunset.xposed"
+        applicationId = "rocks.sunset.xposed"
         minSdk = 24
         targetSdk = 33
         versionCode = 8
