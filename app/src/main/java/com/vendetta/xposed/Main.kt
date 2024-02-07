@@ -1,4 +1,4 @@
-package com.vendetta.xposed
+package rocks.sunset.xposed
 
 import android.app.AndroidAppHelper
 import android.content.Context
@@ -138,7 +138,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
         ).apply { isAccessible = true }
 
         val cache = File(param.appInfo.dataDir, "cache").also { it.mkdirs() }
-        val vendetta = File(cache, "vendetta.js")
+        val sunset = File(cache, "sunset.js")
         val etag = File(cache, "vendetta_etag.txt")
         val themeJs = File(cache, "vendetta_theme.js")
         val syscolorsJs = File(cache, "vendetta_syscolors.js")
@@ -154,7 +154,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
             config = LoaderConfig(
                 customLoadUrl = CustomLoadUrl(
                     enabled = false,
-                    url = "http://localhost:4040/vendetta.js"
+                    url = "http://localhost:4040/sunset.js"
                 ),
                 loadReactDevTools = false
             )
@@ -205,19 +205,19 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
 
         val patch = object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
-                val url = if (config.customLoadUrl.enabled) config.customLoadUrl.url else "https://raw.githubusercontent.com/vendetta-mod/builds/master/vendetta.js"
+                val url = if (config.customLoadUrl.enabled) config.customLoadUrl.url else "https://raw.githubusercontent.com/sunset-mod/builds/master/sunset.js"
                 try {
                     val conn = URL(url).openConnection() as HttpURLConnection
                     conn.connectTimeout = 3000
                     conn.readTimeout = 3000
 
-                    if (etag.exists() && vendetta.exists()) {
+                    if (etag.exists() && sunset.exists()) {
                         conn.setRequestProperty("If-None-Match", etag.readText())
                     }
 
                     if (conn.responseCode == 200) {
                         conn.inputStream.use { input ->
-                            vendetta.outputStream().use { output ->
+                            sunset.outputStream().use { output ->
                                 input.copyTo(output)
                             }
                         }
