@@ -106,11 +106,11 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
         if (resparam.packageName.contains(".webview")) return
 
         // rawColorMap is initialized during handleLoadPackage
-        rawColorMap.forEach { (key, value) -> 
+        rawColorMap.forEach { (key, value) ->
             try {
                 resparam.res.setReplacement("com.discord", "color", key, value)
             } catch (_: Exception) {
-                Log.i("Vendetta", "No color resource with $key")
+                Log.i("Sunset", "No color resource with $key")
             }
         }
     }
@@ -170,7 +170,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
 
                     // Apply rawColors
                     theme.data.rawColors?.forEach { (key, value) -> rawColorMap[key.lowercase()] = hexStringToColorInt(value) }
-                    
+
                     // Apply semanticColors
                     theme.data.semanticColors?.forEach { (key, value) ->
                         // TEXT_NORMAL -> getTextNormal
@@ -186,8 +186,8 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
                     // If there's any rawColors value, hook the color getter
                     if (!theme.data.rawColors.isNullOrEmpty()) {
                         val getColorCompat = themeManager.getDeclaredMethod(
-                            "getColorCompat", 
-                            Context::class.java, 
+                            "getColorCompat",
+                            Context::class.java,
                             Int::class.javaPrimitiveType
                         )
                         XposedBridge.hookMethod(getColorCompat, object : XC_MethodHook() {
@@ -200,7 +200,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
                 }
             }
         } catch (ex: Exception) {
-            Log.e("Vendetta", "Unable to find/parse theme", ex)
+            Log.e("Sunset", "Unable to find/parse theme", ex)
         }
 
         val patch = object : XC_MethodHook() {
@@ -226,7 +226,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
                         if (header != null) etag.writeText(header)
                     }
                 } catch (e: Exception) {
-                    Log.e("Vendetta", "Failed to download Vendetta from $url")
+                    Log.e("Sunset", "Failed to download Sunset from $url")
                 }
 
                 XposedBridge.invokeOriginalMethod(loadScriptFromAssets, param.thisObject, arrayOf(modResources.assets, "assets://js/modules.js", true))
@@ -336,7 +336,7 @@ class Main : IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPacka
         // Fighting the side effects of changing the package name
         if (param.packageName != "com.discord") {
             val getIdentifier = Resources::class.java.getDeclaredMethod(
-                "getIdentifier", 
+                "getIdentifier",
                 String::class.java,
                 String::class.java,
                 String::class.java
